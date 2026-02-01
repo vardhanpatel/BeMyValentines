@@ -28,6 +28,40 @@
       font-family: system-ui, sans-serif;
       overflow: hidden;
       padding: 16px;
+      position: relative;
+    }
+
+    /* FLOATING HEARTS BACKGROUND */
+    .floating-hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .heart-float {
+      position: absolute;
+      font-size: 24px;
+      opacity: 0;
+      animation: float-up 8s ease-in infinite;
+    }
+
+    @keyframes float-up {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.7;
+      }
+      90% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
     }
 
     /* FULL-SCREEN CONFETTI CANVAS */
@@ -48,6 +82,20 @@
       border-radius: 22px;
       text-align: center;
       box-shadow: 0 18px 60px rgba(0,0,0,.15);
+      position: relative;
+      z-index: 10;
+      animation: card-entrance 0.6s ease-out;
+    }
+
+    @keyframes card-entrance {
+      from {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
     }
 
     .art {
@@ -55,11 +103,28 @@
       margin: 0 auto 10px;
       display: block;
       filter: drop-shadow(0 10px 14px rgba(0,0,0,.12));
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
     }
 
     h1 {
       font-size: clamp(26px, 4vw, 44px);
       margin: 12px 0 18px;
+      background: linear-gradient(135deg, #ff3b7a, #ff1f68, #ff3b7a);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradient-shift 3s ease infinite;
+    }
+
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% center; }
+      50% { background-position: 100% center; }
     }
 
     .button-zone {
@@ -90,19 +155,40 @@
       left: 18%;
       background: var(--yes);
       color: #fff;
+      animation: pulse 1.5s ease-in-out infinite;
     }
-    #yesBtn:hover { background: var(--yesHover); }
+    
+    #yesBtn:hover { 
+      background: var(--yesHover);
+      animation: none;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 10px 24px rgba(255, 59, 122, 0.4); }
+      50% { box-shadow: 0 10px 40px rgba(255, 59, 122, 0.8); }
+    }
 
     #noBtn {
       left: 62%;
       background: #e5e7eb;
       color: #111827;
+      transition: all 0.15s ease;
+    }
+
+    #noBtn:hover {
+      background: #d1d5db;
     }
 
     .hint {
       margin-top: 10px;
       font-size: 13px;
       opacity: .7;
+      animation: fade-in-out 2s ease-in-out infinite;
+    }
+
+    @keyframes fade-in-out {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 0.9; }
     }
 
     .result {
@@ -114,22 +200,65 @@
     .result h2 {
       font-size: clamp(30px, 4.5vw, 46px);
       margin: 10px 0;
+      background: linear-gradient(135deg, #ff3b7a, #ff1f68);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .cute-gif {
+      width: min(300px, 85vw);
+      margin: 20px auto 10px;
+      display: block;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
     }
 
     .fireworks {
       width: min(380px, 90vw);
-      margin: 0 auto;
+      margin: 15px auto 0;
       display: block;
+      border-radius: 12px;
+    }
+
+    .love-message {
+      font-size: 18px;
+      color: #ff3b7a;
+      font-weight: 600;
+      margin-top: 15px;
+      animation: pop 0.5s ease 0.3s backwards;
     }
 
     @keyframes pop {
       from { transform: scale(.96); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
+
+    /* Sparkle effect */
+    .sparkle {
+      position: absolute;
+      pointer-events: none;
+      font-size: 20px;
+      animation: sparkle-float 1s ease-out forwards;
+    }
+
+    @keyframes sparkle-float {
+      0% {
+        transform: translate(0, 0) scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(1);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 
 <body>
+  <!-- Floating hearts background -->
+  <div class="floating-hearts" id="floatingHearts"></div>
+
   <canvas id="confettiCanvas"></canvas>
 
   <main class="card">
@@ -150,7 +279,17 @@
                C294 25 314 33 314 50
                C314 78 282 92 282 106
                C282 92 250 78 250 50Z"
-            fill="url(#heart)"/>
+            fill="url(#heart)">
+        <animateTransform
+          attributeName="transform"
+          type="scale"
+          values="1;1.1;1"
+          dur="1s"
+          repeatCount="indefinite"
+          additive="sum"
+          calcMode="spline"
+          keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"/>
+      </path>
 
       <path d="M90 120 C90 70 140 40 190 60
                C240 40 290 70 290 120
@@ -174,20 +313,22 @@
     <h1>Niwu will you be my valentine?</h1>
 
     <section class="button-zone" id="zone">
-      <button id="yesBtn">Yes</button>
+      <button id="yesBtn">Yes! 💕</button>
       <button id="noBtn">No</button>
     </section>
 
     <!-- HINT -->
-    <div class="hint" id="hint">“No” seems a bit shy 😈</div>
+    <div class="hint" id="hint">"No" seems a bit shy 😈</div>
 
     <section class="result" id="result">
-      <h2>YAY! 🎉</h2>
+      <h2>YAY! 🎉 - I LOVE YOU</h2>
       <img
-        class="fireworks"
-        src="https://media.giphy.com/media/26ufdipQqU2lhNA4g/giphy.gif"
-        alt="Fireworks"
+        class="cute-gif"
+        src="https://i.pinimg.com/originals/26/65/ee/2665eedf2100e60848d7302e8a7ee7d6.gif"
+        alt="Cute celebration"
       />
+      <p class="love-message">I knew you'd say yes! 💖</p>
+    
     </section>
   </main>
 
@@ -197,6 +338,22 @@
     const noBtn = document.getElementById("noBtn");
     const result = document.getElementById("result");
     const hint = document.getElementById("hint");
+
+    /* ---------- FLOATING HEARTS ---------- */
+    function createFloatingHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart-float';
+      heart.textContent = ['💕', '💖', '💗', '💝', '💓'][Math.floor(Math.random() * 5)];
+      heart.style.left = Math.random() * 100 + '%';
+      heart.style.animationDelay = Math.random() * 8 + 's';
+      heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+      document.getElementById('floatingHearts').appendChild(heart);
+      
+      setTimeout(() => heart.remove(), 8000);
+    }
+
+    // Create hearts periodically
+    setInterval(createFloatingHeart, 800);
 
     /* ---------- CONFETTI ---------- */
     const confettiCanvas = document.getElementById("confettiCanvas");
@@ -219,14 +376,15 @@
     });
 
     function fullScreenConfetti() {
-      const end = Date.now() + 1600;
+      const end = Date.now() + 2500;
 
       (function frame() {
         confettiInstance({
-          particleCount: 12,
+          particleCount: 15,
           spread: 90,
-          startVelocity: 45,
-          ticks: 180,
+          startVelocity: 50,
+          ticks: 200,
+          colors: ['#ff3b7a', '#ff1f68', '#ff7aa2', '#ffd6e7', '#ffeef6'],
           origin: { x: Math.random(), y: Math.random() * 0.3 }
         });
         if (Date.now() < end) requestAnimationFrame(frame);
@@ -234,20 +392,50 @@
 
       setTimeout(() => {
         confettiInstance({
-          particleCount: 300,
-          spread: 140,
-          startVelocity: 60,
-          ticks: 220,
+          particleCount: 400,
+          spread: 160,
+          startVelocity: 70,
+          ticks: 250,
+          colors: ['#ff3b7a', '#ff1f68', '#ff7aa2', '#ffd6e7'],
           origin: { x: 0.5, y: 0.55 }
         });
-      }, 300);
+      }, 400);
+    }
+
+    /* ---------- SPARKLE EFFECT ---------- */
+    function createSparkle(x, y) {
+      const sparkles = ['✨', '⭐', '💫', '🌟'];
+      for (let i = 0; i < 3; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+        sparkle.style.left = x + 'px';
+        sparkle.style.top = y + 'px';
+        
+        const tx = (Math.random() - 0.5) * 100;
+        const ty = (Math.random() - 0.5) * 100;
+        sparkle.style.setProperty('--tx', tx + 'px');
+        sparkle.style.setProperty('--ty', ty + 'px');
+        
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 1000);
+      }
     }
 
     /* ---------- YES BUTTON GROWS ---------- */
     let yesScale = 1;
+    let clickCount = 0;
+    
     function growYes() {
-      yesScale = Math.min(2.2, yesScale + 0.1);
+      yesScale = Math.min(2.5, yesScale + 0.12);
       yesBtn.style.transform = `translateY(-50%) scale(${yesScale})`;
+      
+      // Add sparkles around yes button
+      if (clickCount % 2 === 0) {
+        const rect = yesBtn.getBoundingClientRect();
+        createSparkle(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      }
+      clickCount++;
     }
 
     /* ---------- NO BUTTON RUNS AWAY ---------- */
@@ -265,8 +453,8 @@
       dx /= mag;
       dy /= mag;
 
-      let newLeft = (b.left - z.left) + dx * 150;
-      let newTop  = (b.top - z.top) + dy * 150;
+      let newLeft = (b.left - z.left) + dx * 160;
+      let newTop  = (b.top - z.top) + dy * 160;
 
       newLeft = clamp(newLeft, 0, z.width - b.width);
       newTop  = clamp(newTop, 0, z.height - b.height);
@@ -284,7 +472,7 @@
         (b.left + b.width / 2) - e.clientX,
         (b.top + b.height / 2) - e.clientY
       );
-      if (d < 140) moveNo(e.clientX, e.clientY);
+      if (d < 150) moveNo(e.clientX, e.clientY);
     });
 
     noBtn.addEventListener("click", e => e.preventDefault());
@@ -292,14 +480,23 @@
     /* ---------- YES CLICK ---------- */
     yesBtn.addEventListener("click", () => {
       zone.style.display = "none";
-      hint.style.display = "none";     // HIDE THE HINT
+      hint.style.display = "none";
       result.style.display = "block";
       resizeConfettiCanvas();
       fullScreenConfetti();
+      
+      // More sparkles!
+      setTimeout(() => {
+        for (let i = 0; i < 10; i++) {
+          setTimeout(() => {
+            createSparkle(
+              Math.random() * window.innerWidth,
+              Math.random() * window.innerHeight * 0.6
+            );
+          }, i * 100);
+        }
+      }, 500);
     });
   </script>
 </body>
 </html>
-
-
-
