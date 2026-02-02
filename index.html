@@ -206,19 +206,30 @@
       background-clip: text;
     }
 
-    .cute-gif {
-      width: min(300px, 85vw);
-      margin: 20px auto 10px;
-      display: block;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+    .image-container {
+      position: relative;
+      width: min(380px, 90vw);
+      height: 300px;
+      margin: 20px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .fireworks {
-      width: min(380px, 90vw);
-      margin: 15px auto 0;
-      display: block;
-      border-radius: 12px;
+    .celebration-img {
+      position: absolute;
+      width: 100%;
+      height: auto;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.15);
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .celebration-img.active {
+      opacity: 1;
     }
 
     .love-message {
@@ -321,14 +332,20 @@
     <div class="hint" id="hint">"No" seems a bit shy 😈</div>
 
     <section class="result" id="result">
-      <h2>YAY! 🎉 - I LOVE YOU</h2>
-      <img
-        class="cute-gif"
-        src="https://i.pinimg.com/originals/26/65/ee/2665eedf2100e60848d7302e8a7ee7d6.gif"
-        alt="Cute celebration"
-      />
+      <h2>YAY! 🎉</h2>
+      <div class="image-container">
+        <img
+          class="celebration-img active"
+          src="https://i.pinimg.com/originals/26/65/ee/2665eedf2100e60848d7302e8a7ee7d6.gif"
+          alt="Cute celebration"
+        />
+        <img
+          class="celebration-img"
+          src="https://github-production-user-asset-6210df.s3.amazonaws.com/22402313/543585075-d0de5eac-216b-4d9c-98bf-ae0627be21e7.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20260202%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260202T052550Z&X-Amz-Expires=300&X-Amz-Signature=21756ec908f34a5a50b07ea25e3252d5cbec6cf45e41b17c5e8871f97d884de4&X-Amz-SignedHeaders=host"
+          alt="Fireworks"
+        />
+      </div>
       <p class="love-message">I knew you'd say yes! 💖</p>
-    
     </section>
   </main>
 
@@ -496,6 +513,16 @@
           }, i * 100);
         }
       }, 500);
+
+      // Alternate between images
+      const images = document.querySelectorAll('.celebration-img');
+      let currentIndex = 0;
+      
+      setInterval(() => {
+        images[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex + 1) % images.length;
+        images[currentIndex].classList.add('active');
+      }, 3500); // Switch every 3.5 seconds
     });
   </script>
 </body>
