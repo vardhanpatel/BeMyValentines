@@ -130,7 +130,7 @@
     .button-zone {
       position: relative;
       width: min(520px, 92%);
-      height: 150px;
+      height: 180px;
       margin: 0 auto;
       touch-action: none;
     }
@@ -152,7 +152,7 @@
     }
 
     #yesBtn {
-      left: 18%;
+      left: 15%;
       background: var(--yes);
       color: #fff;
       animation: pulse 1.5s ease-in-out infinite;
@@ -169,14 +169,16 @@
     }
 
     #noBtn {
-      left: 62%;
+      left: 65%;
       background: #e5e7eb;
       color: #111827;
-      transition: all 0.15s ease;
+      transition: all 0.3s ease;
+      position: absolute;
     }
 
-    #noBtn:hover {
-      background: #d1d5db;
+    #noBtn.hovering {
+      background: var(--yes);
+      color: #fff;
     }
 
     .hint {
@@ -341,8 +343,8 @@
         />
         <img
           class="celebration-img"
-          src="https://github-production-user-asset-6210df.s3.amazonaws.com/22402313/543585075-d0de5eac-216b-4d9c-98bf-ae0627be21e7.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20260202%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260202T052550Z&X-Amz-Expires=300&X-Amz-Signature=21756ec908f34a5a50b07ea25e3252d5cbec6cf45e41b17c5e8871f97d884de4&X-Amz-SignedHeaders=host"
-          alt="Fireworks"
+          src="https://github.com/vardhanpatel/BeMyValentines/blob/main/vptempimage5678.jpg?raw=true"
+          alt="YouAndI"
         />
       </div>
       <p class="love-message">I knew you'd say yes! 💖</p>
@@ -470,11 +472,14 @@
       dx /= mag;
       dy /= mag;
 
-      let newLeft = (b.left - z.left) + dx * 160;
-      let newTop  = (b.top - z.top) + dy * 160;
+      // Balanced movement distance - still hard to catch but not impossible
+      let newLeft = (b.left - z.left) + dx * 200;
+      let newTop  = (b.top - z.top) + dy * 200;
 
-      newLeft = clamp(newLeft, 0, z.width - b.width);
-      newTop  = clamp(newTop, 0, z.height - b.height);
+      // Add padding to keep button well within bounds
+      const padding = 10;
+      newLeft = clamp(newLeft, padding, z.width - b.width - padding);
+      newTop  = clamp(newTop, padding, z.height - b.height - padding);
 
       noBtn.style.left = newLeft + "px";
       noBtn.style.top = newTop + "px";
@@ -489,7 +494,17 @@
         (b.left + b.width / 2) - e.clientX,
         (b.top + b.height / 2) - e.clientY
       );
-      if (d < 150) moveNo(e.clientX, e.clientY);
+      
+      // Smaller detection radius - only triggers when cursor gets reasonably close
+      if (d < 180) {
+        noBtn.textContent = "Yes! 💕";
+        noBtn.classList.add('hovering');
+        moveNo(e.clientX, e.clientY);
+      } else {
+        // Revert back to "No" when cursor moves away
+        noBtn.textContent = "No";
+        noBtn.classList.remove('hovering');
+      }
     });
 
     noBtn.addEventListener("click", e => e.preventDefault());
@@ -498,6 +513,7 @@
     yesBtn.addEventListener("click", () => {
       zone.style.display = "none";
       hint.style.display = "none";
+      document.querySelector('h1').style.display = "none";  // Hide the title
       result.style.display = "block";
       resizeConfettiCanvas();
       fullScreenConfetti();
